@@ -1,3 +1,7 @@
+require('babel-register');
+require('babel-polyfill');
+require('dot-env').config();
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
