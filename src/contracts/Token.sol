@@ -20,6 +20,7 @@ contract Token {
   }
 
   function transfer(address _to, uint256 _amount) public returns(bool success) {
+    require(_to != address(0));
     require(balanceOf[msg.sender] >= _amount);
 
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(_amount);
