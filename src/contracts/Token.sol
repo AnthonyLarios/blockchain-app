@@ -10,8 +10,9 @@ contract Token {
   string public symbol = "HW";
   uint256 public decimals = 18;
   uint256 public totalSupply;
-
   mapping(address => uint256) public balanceOf;
+
+  event Transfer(address indexed from, address indexed to , uint256 value);
 
   constructor() public {
     totalSupply = 100 * (10 ** decimals);
@@ -21,6 +22,7 @@ contract Token {
   function transfer(address _to, uint256 _amount) public returns(bool success) {
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(_amount);
     balanceOf[_to] = balanceOf[_to].add(_amount);
+    emit Transfer(msg.sender, _to, _amount);
     return true;
   }
 }
