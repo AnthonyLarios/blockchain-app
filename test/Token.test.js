@@ -4,7 +4,7 @@ require('chai')
   .use(require('chai-as-promised'))
   .should();
 
-contract("Token", ([deployer]) => {
+contract("Token", ([deployer, receiver]) => {
 
   const name = "Hello, world.";
   const symbol = "HW";
@@ -41,6 +41,23 @@ contract("Token", ([deployer]) => {
     it("assigns the total supply to the deployer", async () => {
       const result = await token.balanceOf(deployer);
       result.toString().should.equal(totalSupply);
+    });
+  });
+
+  describe("sending tokens", () => {
+    it("transfers token balances", async () => {
+      let balanceOf;
+      balanceOf = await token.balanceOf(deployer);
+      console.log("deployer balance before transfer: " + balanceOf);
+      balanceOf = await token.balanceOf(receiver);
+      console.log("receiver balance before transfer: " + balanceOf);
+
+      await token.transfer(receiver, "1000000000000000000", {from: deployer});
+
+      balanceOf = await token.balanceOf(deployer);
+      console.log("deployer balance after transfer: " + balanceOf);
+      balanceOf = await token.balanceOf(receiver);
+      console.log("receiver balance after transfer: " + balanceOf);
     });
   });
 });
