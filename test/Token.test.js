@@ -49,28 +49,39 @@ contract("Token", ([deployer, receiver]) => {
   describe("sending tokens", () => {
     let result, amount;
 
-    beforeEach(async () => {
-      amount = tokens(1);
-      result = await token.transfer(receiver, amount, { from: deployer });
+    describe("success", async () => {
+
+      beforeEach(async () => {
+        amount = tokens(1);
+        result = await token.transfer(receiver, amount, { from: deployer });
+      });
+
+      it("transfers token balances", async () => {
+        let balanceOf;
+
+        balanceOf = await token.balanceOf(deployer);
+        balanceOf.toString().should.equal(tokens(99).toString());
+        balanceOf = await token.balanceOf(receiver);
+        balanceOf.toString().should.equal(tokens(1).toString());
+      });
+
+      it("emits a transfer event", async() => {
+        const log = result.logs[0];
+        log.event.should.equal("Transfer");
+
+        const event = log.args;
+        event.from.should.equal(deployer, "from is correct");
+        event.to.should.equal(receiver, "to is correct");
+        event.value.toString().should.equal(amount.toString(), "value is correct");
+      });
     });
 
-    it("transfers token balances", async () => {
-      let balanceOf;
-
-      balanceOf = await token.balanceOf(deployer);
-      balanceOf.toString().should.equal(tokens(99).toString());
-      balanceOf = await token.balanceOf(receiver);
-      balanceOf.toString().should.equal(tokens(1).toString());
-    });
-
-    it("emits a transfer event", async() => {
-      const log = result.logs[0];
-      log.event.should.equal("Transfer");
-
-      const event = log.args;
-      event.from.should.equal(deployer, "from is correct");
-      event.to.should.equal(receiver, "to is correct");
-      event.value.toString().should.equal(amount.toString(), "value is correct");
+    describe("failure", async() => {
+      it("rejects insufficient balances", async () => {
+        let invalidAmount = tokens(1000);
+        let error = "VM Exception while processing transaction: revert";
+        await token.transfer(receiver, invalidAmount, { from: deployer }).should.be.rejectedWith(error);
+      });
     });
   });
 });
