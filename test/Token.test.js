@@ -1,4 +1,4 @@
-import { tokens } from './helpers.js';
+import { tokens, EVM_REVERT } from './helpers.js';
 
 const Token = artifacts.require("./Token");
 
@@ -79,8 +79,12 @@ contract("Token", ([deployer, receiver]) => {
     describe("failure", async() => {
       it("rejects insufficient balances", async () => {
         let invalidAmount = tokens(1000);
-        let error = "VM Exception while processing transaction: revert";
-        await token.transfer(receiver, invalidAmount, { from: deployer }).should.be.rejectedWith(error);
+        await token.transfer(receiver, invalidAmount, { from: deployer }).should.be.rejectedWith(EVM_REVERT);
+      });
+
+      it("rejects insufficient balances", async () => {
+        let invalidAmount = tokens(1);
+        await token.transfer(deployer, invalidAmount, { from: receiver }).should.be.rejectedWith(EVM_REVERT);
       });
     });
   });
