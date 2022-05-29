@@ -150,6 +150,21 @@ contract("Token", ( [deployer, receiver, exchange] ) => {
         balanceOf = await token.balanceOf(receiver);
         balanceOf.toString().should.equal(tokens(10).toString());
       });
+
+      it("resets the allowance", async () => {
+        const allowance = await token.allowance(deployer, exchange);
+        allowance.toString().should.equal("0");
+      });
+
+      it("emits a transfer event", () => {
+        const log = result.logs[0];
+        log.event.should.equal("Transfer");
+
+        const event = log.args;
+        event.from.should.equal(deployer, "from is correct");
+        event.to.should.equal(receiver, "to is correct");
+        event.value.toString().should.equal(amount.toString(), "value is correct");
+      });
     });
   });
 });
