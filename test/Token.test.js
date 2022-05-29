@@ -49,7 +49,7 @@ contract("Token", ([deployer, receiver]) => {
   describe("sending tokens", () => {
     let result, amount;
 
-    describe("success", async () => {
+    describe("success", () => {
 
       beforeEach(async () => {
         amount = tokens(1);
@@ -65,7 +65,7 @@ contract("Token", ([deployer, receiver]) => {
         balanceOf.toString().should.equal(tokens(1).toString());
       });
 
-      it("emits a transfer event", async() => {
+      it("emits a transfer event", () => {
         const log = result.logs[0];
         log.event.should.equal("Transfer");
 
@@ -76,7 +76,7 @@ contract("Token", ([deployer, receiver]) => {
       });
     });
 
-    describe("failure", async() => {
+    describe("failure", () => {
       it("rejects insufficient balances", async () => {
         let invalidAmount = tokens(1000);
         await token.transfer(receiver, invalidAmount, { from: deployer }).should.be.rejectedWith(EVM_REVERT);
@@ -87,8 +87,8 @@ contract("Token", ([deployer, receiver]) => {
         await token.transfer(deployer, invalidAmount, { from: receiver }).should.be.rejectedWith(EVM_REVERT);
       });
 
-      it("rejects invalid recipients", async () => {
-        await token.transfer(0x0, amount, { from: deployer }).should.be.rejected;
+      it("rejects invalid recipients", () => {
+        token.transfer(0x0, amount, { from: deployer }).should.be.rejected;
       });
     });
   });
