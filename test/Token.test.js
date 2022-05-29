@@ -127,4 +127,29 @@ contract("Token", ( [deployer, receiver, exchange] ) => {
       });
     });
   });
+
+  describe("sending tokens form exchange", () => {
+    let result, amount;
+
+    beforeEach(async () => {
+      amount = tokens(10);
+      await token.approve(exchange, amount, { from: deployer });
+    });
+
+    describe("success", () => {
+
+      beforeEach(async () => {
+        result = await token.transferFrom(deployer, receiver, amount, { from: exchange });
+      });
+
+      it("transfers token balances", async () => {
+        let balanceOf;
+
+        balanceOf = await token.balanceOf(deployer);
+        balanceOf.toString().should.equal(tokens(90).toString());
+        balanceOf = await token.balanceOf(receiver);
+        balanceOf.toString().should.equal(tokens(10).toString());
+      });
+    });
+  });
 });

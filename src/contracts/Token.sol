@@ -45,7 +45,6 @@ contract Token {
   }
 
   function transferFrom(address _from, address _to, uint256 _amount) public returns(bool success) {
-    
-    return true;
+    return _transfer(_to, _from, _amount);
   }
 }
