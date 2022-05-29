@@ -166,5 +166,27 @@ contract("Token", ( [deployer, receiver, exchange] ) => {
         event.value.toString().should.equal(amount.toString(), "value is correct");
       });
     });
+
+    describe("failure", () => {
+      let invalidAmount;
+
+      it("rejects insufficient amounts", async () => {
+        invalidAmount = tokens(1000);
+        await token.transferFrom(deployer, receiver, invalidAmount, { from: exchange }).should.be.rejectedWith(EVM_REVERT);
+      });
+
+      it("rejects amounts over allowance", async () => {
+        invalidAmount = tokens(20);
+        await token.transferFrom(deployer, receiver, invalidAmount, { from: exchange }).should.be.rejectedWith(EVM_REVERT);
+      });
+
+      it("rejects unapproved spender", async () => {
+        await token.transferFrom(deployer, receiver, amount, { from: receiver }).should.be.rejected;
+      });
+
+      it("rejects invalid recipients", async () => {
+        await token.transferFrom(deployer, 0x0, amount, { from: exchange }).should.be.rejected;
+      });
+    });
   });
 });
