@@ -22,20 +22,30 @@ contract Token {
   }
 
   function transfer(address _to, uint256 _amount) public returns(bool success) {
-    require(_to != address(0));
     require(balanceOf[msg.sender] >= _amount);
 
-    balanceOf[msg.sender] = balanceOf[msg.sender].sub(_amount);
+    return _transfer(_to, msg.sender, _amount);
+  }
+
+  function _transfer(address _to, address _from, uint256 _amount) internal returns(bool success) {
+    require(_to != address(0));
+
+    balanceOf[_from] = balanceOf[_from].sub(_amount);
     balanceOf[_to] = balanceOf[_to].add(_amount);
-    emit Transfer(msg.sender, _to, _amount);
+    emit Transfer(_from, _to, _amount);
     return true;
   }
 
   function approve(address _spender, uint256 _amount) public returns(bool success) {
     require(_spender != address(0));
-    
+
     allowance[msg.sender][_spender] = _amount;
     emit Approval(msg.sender, _spender, _amount);
+    return true;
+  }
+
+  function transferFrom(address _from, address _to, uint256 _amount) public returns(bool success) {
+    
     return true;
   }
 }
