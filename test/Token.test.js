@@ -119,5 +119,12 @@ contract("Token", ( [deployer, receiver, exchange] ) => {
         event.value.toString().should.equal(amount.toString(), "value is correct");
       });
     });
+
+    describe("faliure", () => {
+
+      it("rejects invalide spender", async () => {
+        await token.approve(0x0, amount, { from: deployer }).should.be.rejected;
+      });
+    });
   });
 });
