@@ -1,4 +1,4 @@
-import { EVM_ReVERT } from './helpers';
+import { EVM_REVERT } from './helpers';
 
 const Exchange = artifacts.require("./Exchange");
 
@@ -8,12 +8,21 @@ require('chai')
 
 contract("Exchange", ([deployer, feeAccount]) => {
   let exchange;
+  const feePercent = 1;
 
   beforeEach(async () => {
-    exchange = await Exchange.new();
+    exchange = await Exchange.new(feeAccount, feePercent);
   });
 
   describe("deployment", () => {
+    it("tracks the fee account", async () => {
+      const result = await exchange.feeAccount();
+      result.should.equal(feeAccount);
+    });
 
+    it("tracks the fee percent", async () => {
+      const result = await exchange.feePercent();
+      result.toString().should.equal(feePercent.toString());
+    });
   });
 });
