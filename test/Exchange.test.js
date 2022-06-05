@@ -61,6 +61,27 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
       });
   });
 
+  describe("withdrawing Ether", () => {
+    let result, amount;
+
+    beforeEach(async () => {
+      amount = ether(1);
+      await exchange.depositEther({ from: user1, value: amount });
+    });
+
+    describe("sucess", () => {
+
+      beforeEach(async () => {
+        result = await exchange.withdrawEther(amount, { from: user1 });
+      });
+
+      it("withdraws Ether funds", async () => {
+        const balance = await exchange.tokens(ETHER_ADDRESS, user1);
+        balance.toString().should.equal("0");
+      });
+    });
+  });
+
   describe("depositing tokens", () => {
     let result, amount;
 
@@ -91,14 +112,15 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
         event.balance.toString().should.equal(amount.toString(), "balance is correct");
       });
     });
+    
     describe("failure", () => {
 
       it("rejects Ether deposits", async () => {
-        await exchange.depositToken(ETHER_ADDRESS, tokens(10), { from: user1 }).should.be.rejectedWith(EVM_REVERT);
+        await exchange.depositToken(ETHER_ADDRESS, amount, { from: user1 }).should.be.rejectedWith(EVM_REVERT);
       });
 
       it("fails when no tokens are apporved", async () => {
-        await exchange.depositToken(token.address, tokens(10), { from: user1 }).should.be.rejectedWith(EVM_REVERT);
+        await exchange.depositToken(token.address, amount, { from: user1 }).should.be.rejectedWith(EVM_REVERT);
       });
     });
   });
