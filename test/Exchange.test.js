@@ -51,14 +51,14 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
     });
 
     it("emits a deposit event", async () => {
-        const log = result.logs[0];
-        log.event.should.equal("Deposit");
-        const event = log.args;
-        event.token.should.equal(ETHER_ADDRESS, "token address is correct");
-        event.user.should.equal(user1, "user address is correct");
-        event.amount.toString().should.equal(amount.toString(), "amount is correct");
-        event.balance.toString().should.equal(amount.toString(), "balance is correct");
-      });
+      const log = result.logs[0];
+      log.event.should.equal("Deposit");
+      const event = log.args;
+      event.token.should.equal(ETHER_ADDRESS, "token address is correct");
+      event.user.should.equal(user1, "user address is correct");
+      event.amount.toString().should.equal(amount.toString(), "amount is correct");
+      event.balance.toString().should.equal(amount.toString(), "balance is correct");
+    });
   });
 
   describe("withdrawing Ether", () => {
@@ -69,7 +69,7 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
       await exchange.depositEther({ from: user1, value: amount });
     });
 
-    describe("sucess", () => {
+    describe("success", () => {
 
       beforeEach(async () => {
         result = await exchange.withdrawEther(amount, { from: user1 });
@@ -78,6 +78,16 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
       it("withdraws Ether funds", async () => {
         const balance = await exchange.tokens(ETHER_ADDRESS, user1);
         balance.toString().should.equal("0");
+      });
+
+      it("emits a withdraw event", async () => {
+        const log = result.logs[0];
+        log.event.should.equal("Withdraw");
+        const event = log.args;
+        event.token.should.equal(ETHER_ADDRESS, "token address is correct");
+        event.user.should.equal(user1, "user address is correct");
+        event.amount.toString().should.equal(amount.toString(), "amount is correct");
+        event.balance.toString().should.equal("0", "balance is correct");
       });
     });
   });
@@ -112,7 +122,7 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
         event.balance.toString().should.equal(amount.toString(), "balance is correct");
       });
     });
-    
+
     describe("failure", () => {
 
       it("rejects Ether deposits", async () => {
