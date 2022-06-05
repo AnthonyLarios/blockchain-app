@@ -159,6 +159,16 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
         const balance = await exchange.tokens(token.address, user1);
         balance.toString().should.equal("0");
       });
+
+      it("emits a withdraw event", async () => {
+        const log = result.logs[0];
+        log.event.should.equal("Withdraw");
+        const event = log.args;
+        event.token.should.equal(token.address, "token address is correct");
+        event.user.should.equal(user1, "user address is correct");
+        event.amount.toString().should.equal(amount.toString(), "amount is correct");
+        event.balance.toString().should.equal("0", "balance is correct");
+      });
     });
   });
 });

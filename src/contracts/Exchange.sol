@@ -57,7 +57,8 @@ contract Exchange {
 
   function withdrawToken(address _token, uint256 _amount) public {
     require(Token(_token).transfer(msg.sender, _amount));
-    
+
     tokens[_token][msg.sender] = tokens[_token][msg.sender].sub(_amount);
+    emit Withdraw(_token, msg.sender, _amount, tokens[_token][msg.sender]);
   }
 }
