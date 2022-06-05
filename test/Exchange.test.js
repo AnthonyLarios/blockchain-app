@@ -90,6 +90,13 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
         event.balance.toString().should.equal("0", "balance is correct");
       });
     });
+
+    describe("failure", () => {
+
+      it("rejects withdraws for insufficient balances", async () => {
+        await exchange.withdrawEther(ether(100), { from: user1 }).should.be.rejectedWith(EVM_REVERT);
+      });
+    });
   });
 
   describe("depositing tokens", () => {
