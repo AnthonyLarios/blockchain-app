@@ -1,4 +1,4 @@
-import { tokens, EVM_REVERT } from './helpers';
+import { tokens, EVM_REVERT, ETHER_ADDRESS } from './helpers';
 
 const Token = artifacts.require("./Token");
 const Exchange = artifacts.require("./Exchange");
@@ -33,13 +33,13 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
   describe("depositing tokens", () => {
     let result, amount;
 
-    beforeEach(async () => {
-      amount = tokens(10);
-      await token.approve(exchange.address, amount, { from: user1 });
-      result = await exchange.depositToken(token.address, amount, { from: user1 });
-    });
-
     describe("success", () => {
+
+      beforeEach(async () => {
+        amount = tokens(10);
+        await token.approve(exchange.address, amount, { from: user1 });
+        result = await exchange.depositToken(token.address, amount, { from: user1 });
+      });
 
       it("tracks the token deposit", async () => {
         let balance;
@@ -62,6 +62,13 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
     });
     describe("failure", () => {
 
+      it("rejects Ether deposits", async () => {
+        await exchange.depositToken(ETHER_ADDRESS, tokens(10), { from: user1 }).should.be.rejectedWith(EVM_REVERT);
+      });
+
+      it("fails when no tokens are apporved", async () => {
+        await exchange.depositToken(token.address, tokens(10), { from: user1 }).should.be.rejectedWith(EVM_REVERT);
+      });
     });
   });
 });
