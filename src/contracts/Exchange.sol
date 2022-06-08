@@ -4,8 +4,6 @@ import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import "./Token.sol";
 
 // TODO:
-// [ ] Withdraw Ether
-// [ ] Withdraw Token
 // [ ] Check Balances
 // [ ] Make Order
 // [ ] Cancel Order
@@ -56,6 +54,8 @@ contract Exchange {
   }
 
   function withdrawToken(address _token, uint256 _amount) public {
+    require(_token != ETHER);
+    require(tokens[_token][msg.sender] >= _amount);
     require(Token(_token).transfer(msg.sender, _amount));
 
     tokens[_token][msg.sender] = tokens[_token][msg.sender].sub(_amount);
