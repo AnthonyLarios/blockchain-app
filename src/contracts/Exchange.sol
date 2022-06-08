@@ -4,7 +4,6 @@ import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import "./Token.sol";
 
 // TODO:
-// [ ] Check Balances
 // [ ] Make Order
 // [ ] Cancel Order
 // [ ] Fill Order
@@ -60,5 +59,9 @@ contract Exchange {
 
     tokens[_token][msg.sender] = tokens[_token][msg.sender].sub(_amount);
     emit Withdraw(_token, msg.sender, _amount, tokens[_token][msg.sender]);
+  }
+
+  function balanceOf(address _token, address _user) public view returns (uint256) {
+    return tokens[_token][_user];
   }
 }
