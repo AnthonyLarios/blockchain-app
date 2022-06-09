@@ -182,7 +182,7 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
       });
     });
   });
-  
+
   describe("checking balances", () => {
     const amount = ether(1);
 
@@ -193,6 +193,41 @@ contract("Exchange", ([deployer, feeAccount, user1]) => {
     it("returns user balance", async () => {
       const result = await exchange.balanceOf(ETHER_ADDRESS, user1);
       result.toString().should.equal(amount.toString());
+    });
+  });
+
+  describe("making orders", () => {
+    let result;
+
+    beforeEach(async () => {
+      result = await exchange.makeOrder(token.address, tokens(1), ETHER_ADDRESS, ether(1), { from: user1 });
+    });
+
+    it("tracks the newly created order", async () => {
+      const orderCount = await exchange.orderCount();
+      orderCount.toString().should.equal("1");
+
+      const order = await exchange.orders("1");
+      order.id.toString().should.equal("1", "tokenGet is correct");
+      order.user.should.equal(user1, "user is correct");
+      order.tokenGet.should.equal(token.address, "tokentGet is correct");
+      order.amountGet.toString().should.equal(tokens(1).toString(), "amountGet is correct");
+      order.tokenGive.should.equal(ETHER_ADDRESS, "tokentGive is correct");
+      order.amountGive.toString().should.equal(ether(1).toString(), "amountGive is correct");
+      order.timeStamp.toString().length.should.be.at.least(1, "time stamp is present");
+    });
+
+    it("emits an order event", async () => {
+      const log = result.logs[0];
+      log.event.should.equal("Order");
+      const event = log.args;
+      event.id.toString().should.equal("1", "tokenGet is correct");
+      event.user.should.equal(user1, "user is correct");
+      event.tokenGet.should.equal(token.address, "tokentGet is correct");
+      event.amountGet.toString().should.equal(tokens(1).toString(), "amountGet is correct");
+      event.tokenGive.should.equal(ETHER_ADDRESS, "tokentGive is correct");
+      event.amountGive.toString().should.equal(ether(1).toString(), "amountGive is correct");
+      event.timeStamp.toString().length.should.be.at.least(1, "time stamp is present");
     });
   });
 });
