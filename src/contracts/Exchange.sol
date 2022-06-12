@@ -4,8 +4,6 @@ import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import "./Token.sol";
 
 // TODO:
-// [ ] Make Order
-// [ ] Cancel Order
 // [ ] Fill Order
 // [ ] Charge Fees
 
@@ -20,10 +18,20 @@ contract Exchange {
 
   mapping(address => mapping(address => uint256)) public tokens;
   mapping(uint256 => _Order) public orders;
+  mapping(uint256 => bool) public orderCancelled;
 
   event Deposit(address token, address user, uint256 amount, uint256 balance);
   event Withdraw(address token, address user, uint256 amount, uint256 balance);
   event Order(
+    uint256 id,
+    address user,
+    address tokenGet,
+    uint256 amountGet,
+    address tokenGive,
+    uint256 amountGive,
+    uint256 timeStamp
+  );
+  event Cancel(
     uint256 id,
     address user,
     address tokenGet,
@@ -90,5 +98,14 @@ contract Exchange {
     orderCount = orderCount.add(1);
     orders[orderCount] = _Order(orderCount, msg.sender, _tokenGet, _amountGet, _tokenGive, _amountGive, now);
     emit Order(orderCount, msg.sender, _tokenGet, _amountGet, _tokenGive, _amountGive, now);
+  }
+
+  function cancelOrder(uint256 _id) public {
+    _Order storage _order = orders[_id];
+    require(address(_order.user) == msg.sender);
+    require(_order.id == _id);
+
+    orderCancelled[_id] = true;
+    emit Cancel(_order.id, msg.sender, _order.tokenGet, _order.amountGet, _order.tokenGive, _order.amountGive, now);
   }
 }
