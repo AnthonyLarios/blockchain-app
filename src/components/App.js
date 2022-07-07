@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Web3 from 'web3';
-import Token from './abis/Token.json';
+import Token from '../abis/Token.json';
 
 class App extends Component {
   componentWillMount() {
